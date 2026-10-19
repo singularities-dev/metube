@@ -1,0 +1,46 @@
+import type { Messages } from '../../index.ts';
+
+/**
+ * Names of the starter moods, by mood ID. Shown translated until the user
+ * renames a mood (then their own name is shown as written).
+ */
+export default {
+  'moodSeed.energetic': 'Energía',
+  'moodSeed.chill': 'Relax',
+  'moodSeed.focus': 'Concentración',
+  'moodSeed.gaming-music': 'Música para jugar',
+  'moodSeed.learn': 'Aprender algo',
+  'moodSeed.energetic-workout': 'Entrenamiento',
+  'moodSeed.energetic-motorsport': 'Deportes de motor',
+  'moodSeed.energetic-hype-music': 'Música intensa',
+  'moodSeed.chill-lofi': 'Lo-fi y ambient',
+  'moodSeed.chill-cozy-games': 'Juegos relajantes',
+  'moodSeed.chill-nature': 'Naturaleza y viajes',
+  'moodSeed.focus-deep-work': 'Trabajo profundo',
+  'moodSeed.focus-coding': 'Programación',
+  'moodSeed.learn-science': 'Ciencia y espacio',
+  'moodSeed.learn-tech': 'Tecnología y software',
+  'moodSeed.learn-history': 'Historia y leyendas',
+  'moodSeed.learn-how-it-works': 'Cómo funcionan las cosas',
+  'moodSeed.gaming': 'Videojuegos',
+  'moodSeed.gaming-lore': 'Trasfondo e historia',
+  'moodSeed.gaming-strategy': 'Estrategia',
+  'moodSeed.gaming-speedruns': 'Speedruns y esports',
+  'moodSeed.gaming-indie': 'Indie y desarrollo de juegos',
+  'moodSeed.laugh': 'Hazme reír',
+  'moodSeed.laugh-standup': 'Stand-up',
+  'moodSeed.laugh-late-night': 'Programas nocturnos',
+  'moodSeed.laugh-animals': 'Animales',
+  'moodSeed.news': 'Noticias y actualidad',
+  'moodSeed.news-deep-dives': 'A fondo',
+  'moodSeed.news-catch-up': 'Resumen rápido',
+  'moodSeed.news-business': 'Economía y negocios',
+  'moodSeed.wind-down': 'Desconectar',
+  'moodSeed.wind-down-sleep-sounds': 'Sonidos para dormir',
+  'moodSeed.wind-down-stories': 'Historias tranquilas',
+  'moodSeed.wind-down-asmr': 'ASMR',
+  'moodSeed.make': 'Crear y arreglar',
+  'moodSeed.make-workshop': 'Taller y reparación',
+  'moodSeed.make-cooking': 'Cocina',
+  'moodSeed.make-home': 'Hogar y jardín',
+} satisfies Messages;

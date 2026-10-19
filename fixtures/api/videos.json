@@ -1,0 +1,38 @@
+{
+  "kind": "youtube#videoListResponse",
+  "items": [
+    {
+      "id": "vidAAAAAAA1",
+      "snippet": {
+        "publishedAt": "2026-10-16T18:00:00Z", "channelId": "UCchannelAAAAAAAAAAAAAAA", "channelTitle": "Channel A",
+        "title": "Stage 12 highlights", "description": "Full highlights of stage 12.",
+        "tags": ["cycling", "highlights", "tour"], "categoryId": "17", "liveBroadcastContent": "none",
+        "thumbnails": { "default": { "url": "https://i.ytimg.com/vi/vidAAAAAAA1/default.jpg", "width": 120, "height": 90 },
+                        "medium": { "url": "https://i.ytimg.com/vi/vidAAAAAAA1/mqdefault.jpg", "width": 320, "height": 180 } }
+      },
+      "contentDetails": { "duration": "PT12M30S" },
+      "statistics": { "viewCount": "154321", "likeCount": "4200" },
+      "player": { "embedHtml": "<iframe width=\"1280\" height=\"720\" src=\"//www.youtube.com/embed/vidAAAAAAA1\"></iframe>", "embedWidth": "1280", "embedHeight": "720" }
+    },
+    {
+      "id": "vidAAAAAAA2",
+      "snippet": {
+        "publishedAt": "2026-10-10T18:00:00Z", "channelId": "UCchannelAAAAAAAAAAAAAAA", "channelTitle": "Channel A",
+        "title": "Quick clip", "description": "", "categoryId": "17", "liveBroadcastContent": "none",
+        "thumbnails": { "high": { "url": "https://i.ytimg.com/vi/vidAAAAAAA2/hqdefault.jpg" } }
+      },
+      "contentDetails": { "duration": "PT45S" },
+      "player": { "embedHtml": "<iframe width=\"405\" height=\"720\" src=\"//www.youtube.com/embed/vidAAAAAAA2\"></iframe>", "embedWidth": "405", "embedHeight": "720" }
+    },
+    {
+      "id": "vidAAAAAAA3",
+      "snippet": {
+        "publishedAt": "2026-09-01T18:00:00Z", "channelId": "UCchannelAAAAAAAAAAAAAAA", "channelTitle": "Channel A",
+        "title": "Live: race day", "description": "", "categoryId": "17", "liveBroadcastContent": "upcoming",
+        "thumbnails": {}
+      },
+      "contentDetails": { "duration": "P0D" },
+      "player": { "embedHtml": "<iframe src=\"//www.youtube.com/embed/vidAAAAAAA3\"></iframe>" }
+    }
+  ]
+}

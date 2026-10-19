@@ -1,0 +1,46 @@
+import type { Messages } from '../../index.ts';
+
+/**
+ * Names of the starter moods, by mood ID. Shown translated until the user
+ * renames a mood (then their own name is shown as written).
+ */
+export default {
+  'moodSeed.energetic': 'Energiegeladen',
+  'moodSeed.chill': 'Entspannt',
+  'moodSeed.focus': 'Fokus',
+  'moodSeed.gaming-music': 'Gaming-Musik',
+  'moodSeed.learn': 'Etwas lernen',
+  'moodSeed.energetic-workout': 'Workout',
+  'moodSeed.energetic-motorsport': 'Motorsport',
+  'moodSeed.energetic-hype-music': 'Hype-Musik',
+  'moodSeed.chill-lofi': 'Lo-Fi & Ambient',
+  'moodSeed.chill-cozy-games': 'Gemütliche Spiele',
+  'moodSeed.chill-nature': 'Natur & Reisen',
+  'moodSeed.focus-deep-work': 'Konzentriert arbeiten',
+  'moodSeed.focus-coding': 'Programmieren',
+  'moodSeed.learn-science': 'Wissenschaft & Weltall',
+  'moodSeed.learn-tech': 'Technik & Software',
+  'moodSeed.learn-history': 'Geschichte & Legenden',
+  'moodSeed.learn-how-it-works': 'Wie Dinge funktionieren',
+  'moodSeed.gaming': 'Gaming',
+  'moodSeed.gaming-lore': 'Lore & Story',
+  'moodSeed.gaming-strategy': 'Strategie',
+  'moodSeed.gaming-speedruns': 'Speedruns & E-Sport',
+  'moodSeed.gaming-indie': 'Indie & Spieleentwicklung',
+  'moodSeed.laugh': 'Bring mich zum Lachen',
+  'moodSeed.laugh-standup': 'Stand-up',
+  'moodSeed.laugh-late-night': 'Late-Night-Shows',
+  'moodSeed.laugh-animals': 'Tiere',
+  'moodSeed.news': 'Nachrichten & Welt',
+  'moodSeed.news-deep-dives': 'Hintergründe',
+  'moodSeed.news-catch-up': 'Kurz informiert',
+  'moodSeed.news-business': 'Wirtschaft & Geld',
+  'moodSeed.wind-down': 'Runterkommen',
+  'moodSeed.wind-down-sleep-sounds': 'Einschlafklänge',
+  'moodSeed.wind-down-stories': 'Ruhige Geschichten',
+  'moodSeed.wind-down-asmr': 'ASMR',
+  'moodSeed.make': 'Bauen & Reparieren',
+  'moodSeed.make-workshop': 'Werkstatt & Reparatur',
+  'moodSeed.make-cooking': 'Kochen',
+  'moodSeed.make-home': 'Haus & Garten',
+} satisfies Messages;

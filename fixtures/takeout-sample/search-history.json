@@ -1,0 +1,38 @@
+[
+ {
+  "header": "YouTube",
+  "title": "Searched for synthwave mix",
+  "titleUrl": "https://www.youtube.com/results?search_query=synthwave+mix",
+  "time": "2026-10-01T00:00:00.000Z",
+  "products": [
+   "YouTube"
+  ]
+ },
+ {
+  "header": "YouTube",
+  "title": "Searched for godot tutorial",
+  "titleUrl": "https://www.youtube.com/results?search_query=godot+tutorial",
+  "time": "2026-09-30T00:00:00.000Z",
+  "products": [
+   "YouTube"
+  ]
+ },
+ {
+  "header": "YouTube",
+  "title": "Searched for cycling highlights",
+  "titleUrl": "https://www.youtube.com/results?search_query=cycling+highlights",
+  "time": "2026-09-29T00:00:00.000Z",
+  "products": [
+   "YouTube"
+  ]
+ },
+ {
+  "header": "YouTube",
+  "title": "Searched for motogp",
+  "titleUrl": "https://www.youtube.com/results?search_query=motogp",
+  "time": "2026-09-28T00:00:00.000Z",
+  "products": [
+   "YouTube"
+  ]
+ }
+]

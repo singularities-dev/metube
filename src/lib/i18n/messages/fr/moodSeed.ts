@@ -1,0 +1,46 @@
+import type { Messages } from '../../index.ts';
+
+/**
+ * Names of the starter moods, by mood ID. Shown translated until the user
+ * renames a mood (then their own name is shown as written).
+ */
+export default {
+  'moodSeed.energetic': 'Énergique',
+  'moodSeed.chill': 'Détente',
+  'moodSeed.focus': 'Concentration',
+  'moodSeed.gaming-music': 'Musique de jeux vidéo',
+  'moodSeed.learn': 'Apprendre quelque chose',
+  'moodSeed.energetic-workout': 'Entraînement',
+  'moodSeed.energetic-motorsport': 'Sport automobile',
+  'moodSeed.energetic-hype-music': 'Musique survoltée',
+  'moodSeed.chill-lofi': 'Lo-fi et ambient',
+  'moodSeed.chill-cozy-games': 'Jeux cosy',
+  'moodSeed.chill-nature': 'Nature et voyages',
+  'moodSeed.focus-deep-work': 'Travail en profondeur',
+  'moodSeed.focus-coding': 'Programmation',
+  'moodSeed.learn-science': 'Sciences et espace',
+  'moodSeed.learn-tech': 'Tech et logiciels',
+  'moodSeed.learn-history': 'Histoire et légendes',
+  'moodSeed.learn-how-it-works': 'Comment ça marche',
+  'moodSeed.gaming': 'Jeux vidéo',
+  'moodSeed.gaming-lore': 'Univers et scénarios',
+  'moodSeed.gaming-strategy': 'Stratégie',
+  'moodSeed.gaming-speedruns': 'Speedruns et e-sport',
+  'moodSeed.gaming-indie': 'Indé et création de jeux',
+  'moodSeed.laugh': 'De quoi rire',
+  'moodSeed.laugh-standup': 'Stand-up',
+  'moodSeed.laugh-late-night': 'Talk-shows du soir',
+  'moodSeed.laugh-animals': 'Animaux',
+  'moodSeed.news': 'Actualités du monde',
+  'moodSeed.news-deep-dives': 'Analyses de fond',
+  'moodSeed.news-catch-up': 'L’essentiel en bref',
+  'moodSeed.news-business': 'Économie et finances',
+  'moodSeed.wind-down': 'Décompresser',
+  'moodSeed.wind-down-sleep-sounds': 'Sons pour dormir',
+  'moodSeed.wind-down-stories': 'Histoires apaisantes',
+  'moodSeed.wind-down-asmr': 'ASMR',
+  'moodSeed.make': 'Fabriquer et réparer',
+  'moodSeed.make-workshop': 'Atelier et réparation',
+  'moodSeed.make-cooking': 'Cuisine',
+  'moodSeed.make-home': 'Maison et jardin',
+} satisfies Messages;

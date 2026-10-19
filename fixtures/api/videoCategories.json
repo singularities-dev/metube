@@ -1,0 +1,5 @@
+{ "items": [
+  { "id": "10", "snippet": { "title": "Music", "assignable": true } },
+  { "id": "17", "snippet": { "title": "Sports", "assignable": true } },
+  { "id": "20", "snippet": { "title": "Gaming", "assignable": true } }
+] }
