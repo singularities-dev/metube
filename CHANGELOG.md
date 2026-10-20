@@ -5,20 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-19
+
+First public beta for Firefox and Chrome.
+
 ### Added
 - **Languages.** The whole interface, including the note on YouTube pages and the add-on's description, is available in English (UK), French, German and Spanish. Switch with the flag in the top right; MeTube starts in your browser's language when it's one of these. Numbers, dates and times follow the chosen language.
 - Starter moods search YouTube with tags in your language (until you edit them), and Uncharted topics are named in your language.
 - Google sign-in for sync opens in the chosen language.
 - Google Takeout exports in French, German or Spanish are recognised by their content, not by English file names. JSON exports work fully; localised HTML exports are recognised but their dates aren't read yet, so use JSON for those.
 
-### Changed
-- Confirmations (delete a mood, remove imported history) use MeTube's own dialog instead of the browser's, so they're in MeTube's language and name the action.
-
-## [0.1.0] - 2026-10-19
-
-First public beta for Firefox and Chrome.
-
-### Added
+- Confirmations (delete a mood, remove imported history) use MeTube's own dialog, in MeTube's language.
 - **Your own feed.** Built from your Google Takeout history (watch history, searches, subscriptions and playlists) and your own YouTube Data API key, instead of YouTube's recommendations.
 - **Ratings.** Love, Like, Neutral, Dislike or Hate any video. You can also remove videos as not interested or already watched, or hide a channel. The feed learns from all of it, with Undo.
 - **Moods.** Branching moods (for example Energetic › Motorsport) with their own tags, an intensity setting and schedules. Moods learn from ratings given while they're on, and include 30+ starter moods.

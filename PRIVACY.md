@@ -1,6 +1,6 @@
 # MeTube privacy policy
 
-_Last updated: 19 October 2026_
+_Last updated: 20 October 2026_
 
 MeTube is a browser extension that builds a YouTube feed from your own data instead of YouTube's recommendations. It is made by singularities-dev with Claude and has no servers: the developer never receives, stores or sees your data.
 
@@ -18,7 +18,8 @@ You can remove imported history in Settings → Your data. Removing the extensio
 
 ## What MeTube sends, and to whom
 
-MeTube talks only to Google, on your behalf:
+MeTube talks only to Google, on your behalf. Firefox lists this at install as "browsing activity" (video and channel IDs from your imported history, sent to fetch their details), "search terms" (searches you run in MeTube) and "website activity" (ratings and subscription changes, only if you sync). None of it goes to the developer.
+
 
 - **YouTube Data API** (`www.googleapis.com`): requests for video, channel and search details, sent with your own API key.
 - **Google sign-in** (`accounts.google.com`), only if you use the optional sync. You sign in each time you sync. MeTube uses the sign-in only during that sync, and does not store it, to:

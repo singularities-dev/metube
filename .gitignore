@@ -4,3 +4,4 @@ node_modules/
 .env*
 fixtures/private/
 .dev-profiles/
+.DS_Store

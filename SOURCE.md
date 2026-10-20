@@ -2,7 +2,7 @@
 
 For add-on reviewers and anyone who wants to reproduce the release build.
 
-**Requirements:** Node.js 20 or newer (built with Node 22), npm 10, any OS.
+**Requirements:** Node.js 22 or newer and npm 10 or newer. Release builds were made on macOS with Node 24.16.0; a clean `npm ci` and `npx wxt zip -b firefox` from this archive reproduced a byte-identical Firefox package (same SHA-256).
 
 ```sh
 npm ci

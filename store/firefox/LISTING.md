@@ -7,8 +7,8 @@
 3. Distribution: **On your own** (unlisted, signed; share the file) for a closed beta, or **On this site** (listed) with "Beta" in the summary.
 4. Platforms: Firefox for desktop. Leave Android off for now (sync sign-in isn't supported there).
 5. When asked about source code, answer **Yes** and upload `.output/metube-<version>-sources.zip`.
-6. Paste the fields below, the privacy policy (PRIVACY.md), and REVIEWER_NOTES.md into "Notes to Reviewer".
-7. Upload screenshots from `store/firefox/screenshots/` (listed only).
+6. Paste the fields below. Tick "This add-on has a privacy policy" and paste PRIVACY.md. Paste REVIEWER_NOTES.md into "Notes for Reviewers".
+7. Listed only: after submitting, open Edit Product Page → Images and add the screenshots from `store/firefox/screenshots/`.
 8. Each later upload needs a higher `version` in package.json.
 
 The source archive was checked to rebuild a byte-identical add-on.
@@ -17,7 +17,7 @@ The source archive was checked to rebuild a byte-identical add-on.
 MeTube
 
 ## Summary (max 250 characters)
-Your YouTube feed, built from your own history, ratings and moods instead of YouTube's algorithm. Uses your own YouTube API key; everything stays in your browser. Beta.
+Your YouTube feed, built from your own history, ratings and moods instead of YouTube's algorithm. Uses your own YouTube API key; your data is stored only in your browser. Beta.
 
 ## Description
 MeTube builds a calm video feed from what you actually watch and like, instead of what YouTube's algorithm wants you to watch.
@@ -31,7 +31,8 @@ MeTube builds a calm video feed from what you actually watch and like, instead o
 - **Your ratings on YouTube.** Rate a video from MeTube right on its YouTube page. Activity lists ratings that aren't on YouTube yet, and a small note on the video's page reminds you to like it there, or use the optional batch sync.
 - **Subscriptions.** Subscribe to channels with the bell on any video; their uploads join your feed. The optional sync reads your YouTube subscriptions and sends the ones you change in MeTube.
 - **In your language.** English, French, German and Spanish; switch with the flag in the top right.
-- **Private by design.** No servers, no analytics, no tracking. Your data stays in this browser.
+- **Private by design.** No MeTube servers, no analytics, no tracking. Your library stays in this browser; only the searches, video lookups and (if you sync) ratings and subscription changes you make go to Google's YouTube API.
+- **Hide Shorts.** Shorts are detected by shape, length and #shorts tags.
 - **Plays on YouTube.** Videos open on youtube.com.
 
 **What you need:** a free YouTube Data API key from Google Cloud. MeTube shows you how to get one in a few steps, and tracks your daily quota so you don't run out.

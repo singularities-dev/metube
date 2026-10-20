@@ -27,11 +27,12 @@ export default defineConfig({
         id: 'metube@singularities-dev',
         // data_collection_permissions needs Firefox 140+.
         strict_min_version: '140.0',
-        // Firefox's data-collection declaration. Everything stays local; requests go
-        // only to Google's API with the user's own key or sign-in. Revisit before publishing.
-        data_collection_permissions: { required: ['none'] },
+        // Firefox's data-collection declaration. Nothing goes to the developer, but Mozilla
+        // counts any data sent off the device, third parties included: searches, video and
+        // channel IDs from imported history, and (when syncing) ratings and subscriptions,
+        // all sent to Google's API with the user's own key or sign-in.
+        data_collection_permissions: { required: ['browsingActivity', 'searchTerms', 'websiteActivity'] },
       },
-      gecko_android: { strict_min_version: '142.0' },
     },
   },
   hooks: {
