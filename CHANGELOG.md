@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+- **Toolbar button.** Opens MeTube, or switches to its tab if it's already open. Its tooltip follows the browser's language. No extra permissions.
+
+### Fixed
+- Choosing a category now brings in that category's popular videos on YouTube (1 unit, cached for 6 hours) instead of only filtering what your channels had, which often left it nearly empty.
+- Rating or removing a video no longer reshuffles the feed: only that video (or, for "Don't show this channel", that channel) goes, and what MeTube learned applies on the next refresh. Before, related videos could drop off the page at the same time.
+
 ## [0.1.0] - 2026-10-19
 
 First public beta for Firefox and Chrome.

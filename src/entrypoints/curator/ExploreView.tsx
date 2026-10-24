@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { openMeTubeDB } from '@/lib/db';
 import {
-  EMPTY_CONTEXT, LESSER_SEEN_MAX_VIEWS, POPULAR_MIN_VIEWS, discoveryQuery, gatherPool, moodQuery, rankFeed, searchIntoPool,
+  EMPTY_CONTEXT, LESSER_SEEN_MAX_VIEWS, POPULAR_MIN_VIEWS, categoryIntoPool, discoveryQuery, gatherPool, moodQuery, rankFeed, searchIntoPool,
   unchartedQuery, unknownChannelVideos, type ChannelScope, type Pool, type Popularity,
 } from '@/lib/feed';
 import { TIME_PRESETS, timeWindow, todayValue, type TimePreset } from '@/lib/timerange';
-import type { SearchOptions } from '@/lib/api/client';
+import { localRegion, type SearchOptions } from '@/lib/api/client';
 import { activateMood, effectiveMood, localiseMoods, moodPath, quickMoods, type MoodState } from '@/lib/moods';
 import type { Prefs } from '@/lib/prefs';
 import { normaliseTag, type TagPrefs } from '@/lib/tags';
@@ -74,6 +74,11 @@ export function ExploreView({ prefs, tags, moods, hasKey, dataVersion, onGoToSet
   const [shown, setShown] = useState(prefs.pageSize);
   const [editingMood, setEditingMood] = useState(false);
   const [model, setModel] = useState<PreferenceModel>();
+  // What the feed is ranked with: a snapshot taken at each load, so rating or
+  // removing a video doesn't reshuffle the page (it learns on the next refresh).
+  const [rankModel, setRankModel] = useState<PreferenceModel>();
+  // Removed since the last load: hidden at once without re-ranking anything else.
+  const [removed, setRemoved] = useState<{ videos: Set<string>; channels: Set<string> }>({ videos: new Set(), channels: new Set() });
   // Snapshot of impressions taken at load time, so recording new ones doesn't reshuffle the page.
   const [rankImpressions, setRankImpressions] = useState<Map<string, number>>(new Map());
   const [opened, setOpened] = useState<Set<string>>(new Set());
@@ -98,9 +103,9 @@ export function ExploreView({ prefs, tags, moods, hasKey, dataVersion, onGoToSet
   const pathIds = path.map((m) => m.id).join('/');
 
   const moodChannelMap = useMemo(
-    () => (model && path.length ? moodChannels(model, path.map((m) => m.id)) : new Map<string, number>()),
+    () => (rankModel && path.length ? moodChannels(rankModel, path.map((m) => m.id)) : new Map<string, number>()),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [model, pathIds],
+    [rankModel, pathIds],
   );
   const learnedChannels = [...moodChannelMap.keys()].slice(0, 10).map((id) => ({ channelId: id, title: model?.channelTitles.get(id) ?? id }));
   // Anything that changes which videos a mood needs fetched.
@@ -183,6 +188,8 @@ export function ExploreView({ prefs, tags, moods, hasKey, dataVersion, onGoToSet
         p = r.pool;
         units += r.unitsUsed;
       }
+      setRankModel(buildModel(await allFeedback(db)));
+      setRemoved({ videos: new Set(), channels: new Set() });
       setPool(p);
       setFresh(mode === 'fresh');
       setKeep(new Set());
@@ -218,6 +225,33 @@ export function ExploreView({ prefs, tags, moods, hasKey, dataVersion, onGoToSet
   const load = build;
 
   // Initial load, and after imports or settings changes. Mood changes are handled below.
+  // Choosing a category brings in YouTube's popular videos for it (1 unit, cached
+  // 6 hours), and adds them back after each load while it stays chosen.
+  const poolRef = useRef(pool);
+  poolRef.current = pool;
+  useEffect(() => {
+    const current = poolRef.current;
+    if (!category || !current || !hasKey) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await categoryIntoPool(await openMeTubeDB(), client, current, category, localRegion());
+        if (cancelled) return;
+        // Merge into whatever the pool is now (a search may have added videos meanwhile).
+        setPool((p) => {
+          if (!p) return p;
+          const merged = new Map(p.videos.map((v) => [v.id, v]));
+          for (const v of r.pool.videos) if (r.pool.categoryHits?.has(v.id)) merged.set(v.id, v);
+          return { ...p, videos: [...merged.values()], categoryHits: r.pool.categoryHits };
+        });
+      } catch (e) {
+        // Some categories have no popular chart; anything else is worth showing.
+        if (!cancelled && (e as { kind?: string }).kind !== 'not-found') setError({ cause: e });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [category, loadStamp, hasKey]);
+
   const loadRef = useRef(load);
   loadRef.current = load;
   useEffect(() => {
@@ -246,15 +280,15 @@ export function ExploreView({ prefs, tags, moods, hasKey, dataVersion, onGoToSet
   );
 
   const moodLearned = useMemo(
-    () => (model && path.length ? learnedMoodTags(model, path.map((m) => m.id)) : undefined),
+    () => (rankModel && path.length ? learnedMoodTags(rankModel, path.map((m) => m.id)) : undefined),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [model, moods.state.activeId, moods.state.moods],
+    [rankModel, moods.state.activeId, moods.state.moods],
   );
 
   const items = useMemo(() => {
     if (!pool) return [];
     const watched = opened.size ? new Set([...pool.watched, ...opened]) : pool.watched;
-    return rankFeed({ ...pool, watched }, {
+    const ranked = rankFeed({ ...pool, watched }, {
       ...EMPTY_CONTEXT,
       likedTags: tags.liked,
       blockedTags: tags.blocked,
@@ -266,7 +300,7 @@ export function ExploreView({ prefs, tags, moods, hasKey, dataVersion, onGoToSet
       hideShorts: prefs.hideShorts,
       hideWatched: prefs.hideWatched,
       perChannelCap: prefs.perChannelCap,
-      model,
+      model: rankModel,
       moodLearned,
       impressions: rankImpressions,
       fresh,
@@ -278,9 +312,12 @@ export function ExploreView({ prefs, tags, moods, hasKey, dataVersion, onGoToSet
       publishedBefore: window_.before,
       popularity,
     });
+    return removed.videos.size || removed.channels.size
+      ? ranked.filter((it) => !removed.videos.has(it.video.id) && !removed.channels.has(it.video.channelId))
+      : ranked;
     // mood arrays are rebuilt each render; key them by content instead.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pool, tags, mood.include.join('|'), mood.exclude.join('|'), only, hide, category, prefs.hideShorts, prefs.hideWatched, prefs.perChannelCap, model, moodLearned, rankImpressions, fresh, keep, opened, activeMood?.intensity, moodChannelMap, scope, window_.after, window_.before, popularity]);
+  }, [pool, tags, mood.include.join('|'), mood.exclude.join('|'), only, hide, category, prefs.hideShorts, prefs.hideWatched, prefs.perChannelCap, rankModel, removed, moodLearned, rankImpressions, fresh, keep, opened, activeMood?.intensity, moodChannelMap, scope, window_.after, window_.before, popularity]);
 
   // Count what the first page showed, once per load (used for rotation next time).
   useEffect(() => {
@@ -312,6 +349,11 @@ export function ExploreView({ prefs, tags, moods, hasKey, dataVersion, onGoToSet
       undo: async () => {
         await restoreFeedback(await openMeTubeDB(), v.id, prev);
         setKeep((k) => new Set([...k, v.id]));
+        setRemoved((rm) => {
+          const videos = new Set(rm.videos); videos.delete(v.id);
+          const channels = new Set(rm.channels); channels.delete(v.channelId);
+          return { videos, channels };
+        });
         await reloadModel();
         onFeedbackChange();
         setToast(undefined);
@@ -338,6 +380,9 @@ export function ExploreView({ prefs, tags, moods, hasKey, dataVersion, onGoToSet
     const prev = await getFeedback(db, v.id);
     await dismissVideo(db, v, reason, moods.state.activeId);
     setKeep((k) => { const n = new Set(k); n.delete(v.id); return n; });
+    setRemoved((rm) => reason === 'hide-channel'
+      ? { videos: rm.videos, channels: new Set([...rm.channels, v.channelId]) }
+      : { videos: new Set([...rm.videos, v.id]), channels: rm.channels });
     await afterFeedback(prev, v, (t) => (reason === 'hide-channel'
       ? t('explore.toast.channelHidden', { channel: v.channelTitle })
       : t(`explore.toast.removed.${reason}`)));

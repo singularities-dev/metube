@@ -68,6 +68,8 @@ export interface Pool {
   searchHits: Set<string>;
   /** Video IDs fetched for the active mood. */
   moodHits?: Set<string>;
+  /** Video IDs from YouTube's popular list for the chosen category. */
+  categoryHits?: Set<string>;
   /** Video IDs from a discovery search, for "New to me". */
   discoverHits?: Set<string>;
   /** The interest the last discovery search used. */
@@ -127,7 +129,7 @@ export const EMPTY_CONTEXT: RankContext = {
 /** Why a video is in the feed. The UI words these in the user's language. */
 export type ReasonCode =
   | 'uncharted' | 'moodTags' | 'moodChannel' | 'likedTags' | 'moodLearned' | 'moodSearch' | 'search'
-  | 'newToYou' | 'ratedChannel' | 'ratedSimilar' | 'rewatch' | 'subscribed' | 'library' | 'new';
+  | 'newToYou' | 'ratedChannel' | 'ratedSimilar' | 'rewatch' | 'subscribed' | 'popular' | 'library' | 'new';
 
 export interface Reason {
   code: ReasonCode;
@@ -167,7 +169,7 @@ const LEARNED_TASTE = 1;
 const searchedFor = (queries: string[], tag: string) => queries.some((q) => ` ${q} `.includes(` ${tag} `));
 
 export function rankFeed(
-  pool: Pick<Pool, 'videos' | 'engagement' | 'watched' | 'searchHits' | 'moodHits' | 'discoverHits' | 'discoverFor' | 'library' | 'queries'>,
+  pool: Pick<Pool, 'videos' | 'engagement' | 'watched' | 'searchHits' | 'moodHits' | 'discoverHits' | 'discoverFor' | 'library' | 'queries' | 'categoryHits'>,
   ctx: RankContext,
   now = Date.now(),
 ): FeedItem[] {
@@ -212,6 +214,8 @@ export function rankFeed(
     const fromDiscover = discoverFor === (uncharted ? 'uncharted' : 'new') && (pool.discoverHits?.has(v.id) ?? false);
     const moodChannel = uncharted ? 0 : ctx.moodChannels?.get(v.channelId) ?? 0;
     const fromSearch = pool.searchHits.has(v.id) || fromMood || fromDiscover;
+    // YouTube's popular list for the chosen category (only while that category is chosen).
+    const fromCategory = !!ctx.categoryId && !fromSearch && (pool.categoryHits?.has(v.id) ?? false);
     const inLibrary = (pool.library?.has(v.id) ?? false) && !fromSearch && !moodChannel;
     let fromLibrary: boolean;
     if (uncharted) {
@@ -221,7 +225,7 @@ export function rankFeed(
     } else {
       // Earlier searches' results (cached, no units) join in for "New to me" or while filtering.
       fromLibrary = inLibrary && !ch && (filtering || scope === 'new') && queries.length > 0 && !queries.every(isUnchartedTopic);
-      if (!ch && !fromSearch && !moodChannel && !fromLibrary) continue;
+      if (!ch && !fromSearch && !moodChannel && !fromLibrary && !fromCategory) continue;
     }
 
     const text = videoText(v);
@@ -248,7 +252,10 @@ export function rankFeed(
         weight = Math.max(weight, 0.55);
         reasons.push({ code: 'moodChannel' });
       }
-      if (fromLibrary) {
+      if (fromCategory) {
+        weight = Math.max(weight, 0.4);
+        reasons.push({ code: 'popular' });
+      } else if (fromLibrary) {
         weight = Math.max(weight, 0.4);
         reasons.push({ code: 'library' });
       }
@@ -299,7 +306,7 @@ export function rankFeed(
 }
 
 /** Most specific first: the two shown under a tile are the first two in this order. */
-const REASON_ORDER: ReasonCode[] = ['uncharted', 'moodTags', 'moodChannel', 'likedTags', 'moodLearned', 'moodSearch', 'search', 'newToYou', 'ratedChannel', 'ratedSimilar', 'rewatch', 'subscribed', 'library', 'new'];
+const REASON_ORDER: ReasonCode[] = ['uncharted', 'moodTags', 'moodChannel', 'likedTags', 'moodLearned', 'moodSearch', 'search', 'newToYou', 'ratedChannel', 'ratedSimilar', 'rewatch', 'subscribed', 'popular', 'library', 'new'];
 
 /** Orders reasons by how much they explain, most specific first. */
 export function prioritise(reasons: Reason[]): Reason[] {
@@ -348,6 +355,44 @@ export function moodQuery(include: string[], leafInclude: string[]): string {
 
 /** How long a search's results are reused before searching again (101 units each time). */
 export const MOOD_SEARCH_TTL = 12 * 3_600_000;
+
+/** How long a category's popular list is reused before asking again (1 unit each time). */
+export const CATEGORY_TTL = 6 * 3_600_000;
+
+/**
+ * Adds YouTube's popular videos for a category to the pool, so choosing a
+ * category shows that category even when your channels have little in it.
+ * Cached per category and region; 1 unit when not cached.
+ */
+export async function categoryIntoPool(
+  db: MeTubeDatabase,
+  client: YouTubeClient,
+  current: Pool,
+  categoryId: string,
+  regionCode: string,
+  now = Date.now(),
+): Promise<{ pool: Pool; unitsUsed: number }> {
+  const key = `cat:${categoryId}|${regionCode}`;
+  const row = await db.get('uploads', key);
+  let ids: string[];
+  let units = 0;
+  if (row && now - row.fetchedAt < CATEGORY_TTL) {
+    ids = row.videoIds;
+  } else {
+    const videos = await client.popular(categoryId, regionCode);
+    units = 1;
+    await putVideos(db, videos);
+    ids = videos.map((v) => v.id);
+    await putUploads(db, { channelId: key, videoIds: ids, fetchedAt: now });
+  }
+  const { videos, calls } = await hydrate(db, client, ids, now);
+  const merged = new Map(current.videos.map((v) => [v.id, v]));
+  for (const v of videos.values()) merged.set(v.id, v);
+  return {
+    pool: { ...current, videos: [...merged.values()], categoryHits: new Set(ids), apiCallsMade: current.apiCallsMade + (units ? 1 : 0) + calls },
+    unitsUsed: units + calls,
+  };
+}
 
 /** Cache key for a search. Settings that change its results are part of it. */
 export function searchKey(query: string, o: SearchOptions = {}): string {

@@ -27,6 +27,7 @@ export default {
   'reason.ratedSimilar': 'ähnlich wie deine positiv bewerteten Videos',
   'reason.rewatch': 'von dir immer wieder angesehener Kanal',
   'reason.subscribed': 'abonniert',
+  'reason.popular': 'beliebt in dieser Kategorie',
   'reason.library': 'aus deiner Bibliothek',
   'reason.new': 'gerade erschienen',
 } satisfies Messages;

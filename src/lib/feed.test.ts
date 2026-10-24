@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import { describe, expect, test } from 'vitest';
 import { openMeTubeDB, saveImport } from './db.ts';
 import { getVideos, purgeExpired, putVideos } from './cache.ts';
-import { EMPTY_CONTEXT, UNCHARTED_TOPICS, capPerChannel, gatherPool, isShort, rankFeed, searchIntoPool, unchartedQuery, unchartedTopicId, type RankContext } from './feed.ts';
+import { EMPTY_CONTEXT, UNCHARTED_TOPICS, capPerChannel, categoryIntoPool, gatherPool, isShort, rankFeed, searchIntoPool, unchartedQuery, unchartedTopicId, type RankContext } from './feed.ts';
 import { buildModel } from './model.ts';
 import type { Feedback } from './feedback.ts';
 import { subscribe } from './subscriptions.ts';
@@ -387,5 +387,31 @@ describe('gatherPool + search', () => {
     await gatherPool(db, client, opts, NOW + 7 * 3_600_000);
     expect(fetched.sort()).toEqual(['UULFa', 'UUb']);
     expect((await db.get('uploads', 'lf:UCb'))?.noLongForm).toBe(true);
+  });
+
+  test('a chosen category brings in its popular videos, cached, and only while chosen', async () => {
+    const db = await openMeTubeDB('cat-' + Math.random());
+    let calls = 0;
+    const client = new YouTubeClient({
+      getKey: async () => 'k', quota: new QuotaTracker(new MemoryStore(), () => new Date(NOW)), now: () => NOW,
+      fetch: async (url) => {
+        calls++;
+        const u = new URL(url);
+        expect(u.searchParams.get('chart')).toBe('mostPopular');
+        expect(u.searchParams.get('videoCategoryId')).toBe('20');
+        return { ok: true, status: 200, json: async () => ({ items: [{ id: 'pop1', snippet: { publishedAt: new Date(NOW - DAY).toISOString(), channelId: 'UCstranger', channelTitle: 'S', title: 'Game', description: '', categoryId: '20', thumbnails: {} }, contentDetails: { duration: 'PT10M' } }] }) };
+      },
+    });
+    const empty = { videos: [vid('mine', 'UCtop', 1, { categoryId: '10' })], engagement: [eng('UCtop', 10)], watched: new Set<string>(), searchHits: new Set<string>(), channelsChecked: 0, apiCallsMade: 0, errors: [] };
+    const first = await categoryIntoPool(db, client, empty, '20', 'GB', NOW);
+    expect(first.unitsUsed).toBe(1);
+    const again = await categoryIntoPool(db, client, empty, '20', 'GB', NOW + 3_600_000);
+    expect(again.unitsUsed).toBe(0);
+    expect(calls).toBe(1);
+    const ranked = rankFeed(first.pool, { ...EMPTY_CONTEXT, categoryId: '20' }, NOW);
+    expect(ranked.map((i) => i.video.id)).toEqual(['pop1']);
+    expect(ranked[0]?.reasons[0]).toEqual({ code: 'popular' });
+    // Without the category chosen, an unknown channel's popular video doesn't join the feed.
+    expect(rankFeed(first.pool, EMPTY_CONTEXT, NOW).map((i) => i.video.id)).toEqual(['mine']);
   });
 });

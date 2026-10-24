@@ -2,6 +2,10 @@
 
 Browser extension (Firefox + Chrome) that curates video listings by your own preferences, tags, mood and ratings instead of the platform's algorithm. Local-first: your data stays in your browser, and you use your own YouTube Data API key.
 
+## Use
+
+Click MeTube's toolbar button to open it (it also opens once, right after installing). The page's address is `moz-extension://<install id>/curator.html` in Firefox (the ID is under about:debugging → This Firefox) or `chrome-extension://<extension id>/curator.html` in Chrome.
+
 ## Develop
 
 ```sh
