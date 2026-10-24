@@ -64,11 +64,48 @@ async function rate(videoId: string, rating: Rating): Promise<RateReply> {
   return { rated: true, note: await status(videoId) };
 }
 
+const CURATOR = '/curator.html';
+
+/**
+ * An open MeTube tab, if there is one. Finding it this way needs no "tabs"
+ * permission: Chrome lists its own pages' contexts, and Firefox's background
+ * page can reach its own open pages.
+ */
+async function findCuratorTab(): Promise<{ id: number; windowId: number } | undefined> {
+  const url = browser.runtime.getURL(CURATOR);
+  const runtime = browser.runtime as typeof browser.runtime & {
+    getContexts?: (filter: { contextTypes: string[]; documentUrls: string[] }) => Promise<{ tabId: number; windowId: number }[]>;
+  };
+  if (runtime.getContexts) {
+    const [ctx] = await runtime.getContexts({ contextTypes: ['TAB'], documentUrls: [url, `${url}#explore`, `${url}#tags`, `${url}#settings`] });
+    return ctx && ctx.tabId >= 0 ? { id: ctx.tabId, windowId: ctx.windowId } : undefined;
+  }
+  for (const view of browser.extension?.getViews?.({ type: 'tab' }) ?? []) {
+    const page = view as unknown as { location: Location; browser: typeof browser };
+    if (page.location.pathname !== CURATOR) continue;
+    const tab = await page.browser.tabs.getCurrent();
+    if (tab?.id !== undefined) return { id: tab.id, windowId: tab.windowId ?? -1 };
+  }
+  return undefined;
+}
+
+/** Switches to MeTube's tab, or opens one. */
+async function openCurator() {
+  const tab = await findCuratorTab().catch(() => undefined);
+  if (!tab) {
+    await browser.tabs.create({ url: browser.runtime.getURL(CURATOR) });
+    return;
+  }
+  await browser.tabs.update(tab.id, { active: true });
+  if (tab.windowId >= 0) await browser.windows.update(tab.windowId, { focused: true });
+}
+
 export default defineBackground(() => {
-  // Open the curator page when the extension is installed.
+  // Open MeTube when the extension is installed, and from its toolbar button.
   browser.runtime.onInstalled.addListener(({ reason }) => {
-    if (reason === 'install') void browser.tabs.create({ url: browser.runtime.getURL('/curator.html') });
+    if (reason === 'install') void openCurator();
   });
+  (browser.action ?? browser.browserAction).onClicked.addListener(() => void openCurator());
 
   // sendResponse + `return true` works in both Chrome and Firefox for async replies.
   browser.runtime.onMessage.addListener((message: unknown, _sender, sendResponse: (r: unknown) => void) => {

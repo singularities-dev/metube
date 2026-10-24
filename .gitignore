@@ -5,3 +5,4 @@ node_modules/
 fixtures/private/
 .dev-profiles/
 .DS_Store
+coverage/

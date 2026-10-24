@@ -226,6 +226,24 @@ export class YouTubeClient {
    * Full metadata for up to 50 videos per call (1 unit per call, whatever the parts).
    * The player part with maxHeight adds the embed size, which tells vertical Shorts apart.
    */
+  /**
+   * YouTube's most popular videos in a category for a region, with full
+   * details (1 unit for up to 50). Some categories have no chart; YouTube
+   * answers not-found for those.
+   */
+  async popular(categoryId: string, regionCode = localRegion(), max = 50): Promise<VideoMeta[]> {
+    const r = await this.call<VideosResponse>('videos.list', 'videos', {
+      part: 'snippet,contentDetails,statistics,player',
+      chart: 'mostPopular',
+      videoCategoryId: categoryId,
+      regionCode,
+      maxResults: String(Math.min(50, max)),
+      maxHeight: '720',
+    });
+    const fetchedAt = this.opts.now();
+    return r.items.map((v) => toVideoMeta(v, fetchedAt));
+  }
+
   async videos(ids: string[]): Promise<VideoMeta[]> {
     const out: VideoMeta[] = [];
     const unique = [...new Set(ids)];

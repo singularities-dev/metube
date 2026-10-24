@@ -29,6 +29,7 @@ export default {
   'reason.ratedSimilar': 'similar to videos you rated well',
   'reason.rewatch': 'a channel you rewatch',
   'reason.subscribed': 'subscribed',
+  'reason.popular': 'popular in this category',
   'reason.library': 'from your library',
   'reason.new': 'just published',
 } satisfies Messages;

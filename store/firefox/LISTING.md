@@ -26,7 +26,7 @@ MeTube builds a calm video feed from what you actually watch and like, instead o
 - **Moods.** Pick a mood such as Focus, Chill or Learn something, and the feed re-sorts to match. Moods can switch on by schedule, branch into sub-moods and learn from your ratings.
 - **Rate and remove.** Five ratings from Love to Hate, and "not interested", "already watched" or "hide channel". The feed learns from all of it.
 - **Explore new channels**, or stick to channels you know. **Uncharted** goes further: topics and channels outside everything you watch and like, with only your dislikes still applied.
-- **Filters.** Narrow by tag, category, date (past day, week, month, year or a custom range) and views (lesser seen or very popular).
+- **Filters.** Choosing a category brings in its popular videos. Narrow by tag, category, date (past day, week, month, year or a custom range) and views (lesser seen or very popular).
 - **Saves your quota.** Videos fetched in the last 30 days stay in a local library, so filters and repeat searches often need no API calls.
 - **Your ratings on YouTube.** Rate a video from MeTube right on its YouTube page. Activity lists ratings that aren't on YouTube yet, and a small note on the video's page reminds you to like it there, or use the optional batch sync.
 - **Subscriptions.** Subscribe to channels with the bell on any video; their uploads join your feed. The optional sync reads your YouTube subscriptions and sends the ones you change in MeTube.

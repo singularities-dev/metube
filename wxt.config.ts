@@ -16,6 +16,11 @@ export default defineConfig({
     description: '__MSG_extDescription__',
     default_locale: 'en',
     homepage_url: 'https://github.com/singularities-dev/metube',
+    // The toolbar button that opens MeTube (WXT writes browser_action for Firefox's MV2 build).
+    action: {
+      default_title: '__MSG_extActionTitle__',
+      default_icon: { 16: 'icon/16.png', 32: 'icon/32.png', 48: 'icon/48.png' },
+    },
     // Minimal permissions keep store review simple.
     // `unlimitedStorage` marks IndexedDB as persistent, so the browser won't evict
     // imported history under disk pressure. `identity` lets the optional sync with
@@ -43,10 +48,10 @@ export default defineConfig({
       }
       // The manifest's description per language, from the same catalogues as the UI.
       for (const [dir, locale] of Object.entries(MANIFEST_LOCALES)) {
-        const description = CATALOGS[locale]['manifest.description'] ?? en['manifest.description'];
+        const message = (key: 'manifest.description' | 'manifest.actionTitle') => ({ message: String(CATALOGS[locale][key] ?? en[key]) });
         files.push({
           relativeDest: `_locales/${dir}/messages.json`,
-          contents: JSON.stringify({ extDescription: { message: description } }, null, 2),
+          contents: JSON.stringify({ extDescription: message('manifest.description'), extActionTitle: message('manifest.actionTitle') }, null, 2),
         });
       }
     },
