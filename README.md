@@ -13,6 +13,7 @@ npm install
 npm run dev            # Chrome, hot reload
 npm run dev:firefox    # Firefox
 npm test               # Vitest
+npm run coverage       # tests with coverage (src/lib)
 npm run build && npm run build:firefox
 ```
 
